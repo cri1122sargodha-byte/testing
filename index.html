@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fire Hydrant Locations – Sargodha Division</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif}
+header{background:#b91c1c;color:#fff;padding:12px;font-size:18px;font-weight:bold}
+.container{display:flex;height:calc(100vh - 50px)}
+.sidebar{width:340px;overflow:auto;border-right:1px solid #ddd;padding:10px}
+.city{font-weight:bold;margin:10px 0 6px;color:#111}
+.card{border:1px solid #ddd;padding:8px;margin-bottom:6px;border-radius:8px;cursor:pointer}
+.card:hover{background:#f3f4f6}
+.name{font-size:14px;font-weight:bold}
+.coords{font-size:12px;color:#555}
+.map{flex:1}
+#map{width:100%;height:100%}
+</style>
+</head>
+
+<body>
+<header>Fire Hydrant Locations – Sargodha Division</header>
+
+<div class="container">
+  <div class="sidebar" id="list"></div>
+  <div class="map"><div id="map"></div></div>
+</div>
+
+<script>
+const DATA = [
+ // SARGODHA
+ {city:"Sargodha",name:"Shaheen Chowk",lat:32.08422194,lng:72.66473827},
+ {city:"Sargodha",name:"Katchery Bazar",lat:32.08544925,lng:72.66400919},
+ {city:"Sargodha",name:"Karkhana Bazar",lat:32.08491294,lng:72.66218529},
+ {city:"Sargodha",name:"Sarafa Bazar Corner",lat:32.08578559,lng:72.66501770},
+ {city:"Sargodha",name:"Urdu Bazar",lat:32.08749450,lng:72.66513572},
+ {city:"Sargodha",name:"Sharbat Chowk",lat:32.08647643,lng:72.66734586},
+ {city:"Sargodha",name:"Kalyar Hotel",lat:32.08500384,lng:72.66797886},
+ {city:"Sargodha",name:"Liaqat Market Chowk",lat:32.08460387,lng:72.66636953},
+ {city:"Sargodha",name:"12-Block Chowk",lat:32.08794899,lng:72.66682014},
+ {city:"Sargodha",name:"Rail Bazar",lat:32.08524927,lng:72.66609058},
+ {city:"Sargodha",name:"2-Block Masjid",lat:32.08683093,lng:72.66648755},
+ {city:"Sargodha",name:"Trust Plaza",lat:32.08099500,lng:72.66840801},
+
+ // SILLANWALI
+ {city:"Sillanwali",name:"Railway Road",lat:31.826025,lng:72.537328},
+ {city:"Sillanwali",name:"Block No. 03",lat:31.824997,lng:72.540812},
+ {city:"Sillanwali",name:"Rana Market",lat:31.825045,lng:72.542295},
+
+ // SAHIWAL
+ {city:"Sahiwal",name:"Circular Road",lat:31.972574,lng:72.33001},
+ {city:"Sahiwal",name:"Ring Road",lat:31.975297,lng:72.322489},
+ {city:"Sahiwal",name:"Main Bazar",lat:31.972853,lng:72.329849},
+
+ // SHAHPUR
+ {city:"Shahpur",name:"Main Bazar",lat:32.285818,lng:72.434725},
+ {city:"Shahpur",name:"Sargodha Road",lat:32.288013,lng:72.43392},
+ {city:"Shahpur",name:"Royal Feed Chicks",lat:32.286483,lng:72.433137},
+
+ // BHERA
+ {city:"Bhera",name:"Lalu Wala Darwaza",lat:32.481209,lng:72.907069},
+ {city:"Bhera",name:"Mohallah Ganjwala",lat:32.48218,lng:72.912579},
+ {city:"Bhera",name:"Circular Road",lat:32.479872,lng:72.910327},
+
+ // BHALWAL
+ {city:"Bhalwal",name:"Ameen Bazar",lat:32.266098,lng:72.904049},
+ {city:"Bhalwal",name:"Liaqat Shaheed Road",lat:32.269254,lng:72.904233},
+ {city:"Bhalwal",name:"Salam Bhalwal",lat:32.267743,lng:72.904759},
+
+ // KOTMOMIN
+ {city:"Kotmomin",name:"Old Sabzi Mandi",lat:32.184911,lng:73.028508},
+ {city:"Kotmomin",name:"Muslim Bazar",lat:32.185212,lng:73.028534},
+ {city:"Kotmomin",name:"Main Bazar",lat:32.185049,lng:73.02744}
+];
+
+const map = L.map('map').setView([32.2,72.7],10);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+ attribution:'© OpenStreetMap'
+}).addTo(map);
+
+const hydrantIcon = L.divIcon({
+ html:`<svg width="28" height="28" viewBox="0 0 64 64">
+ <path d="M28 6h8v8h6c4 0 6 3 6 6v8h6v8h-6v16c0 6-4 10-10 10H26c-6 0-10-4-10-10V36H10v-8h6v-8c0-3 2-6 6-6h6V6z" fill="#dc2626"/>
+ </svg>`,
+ iconSize:[28,28],
+ iconAnchor:[14,28]
+});
+
+const list = document.getElementById("list");
+let currentCity="";
+
+DATA.forEach((p)=>{
+ if(p.city!==currentCity){
+   currentCity=p.city;
+   const c=document.createElement("div");
+   c.className="city";
+   c.textContent=currentCity;
+   list.appendChild(c);
+ }
+ const m=L.marker([p.lat,p.lng],{icon:hydrantIcon}).addTo(map);
+ m.bindPopup(`<b>${p.name}</b><br>${p.city}`);
+ const card=document.createElement("div");
+ card.className="card";
+ card.innerHTML=`<div class="name">${p.name}</div>
+ <div class="coords">${p.lat}, ${p.lng}</div>`;
+ card.onclick=()=>{map.setView([p.lat,p.lng],17);m.openPopup();}
+ list.appendChild(card);
+});
+</script>
+</body>
+</html>
