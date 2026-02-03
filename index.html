@@ -34,7 +34,7 @@ header{background:#b91c1c;color:#fff;padding:12px;font-size:18px;font-weight:bol
 <script>
 const DATA = [
  // SARGODHA
- {city:"Sargodha",name:"Shaheen Chowk",lat:32.08,lng:72.3827},
+ {city:"Sargodha",name:"Shaheen Chowk",lat:32.08422194,lng:72.66473827},
  {city:"Sargodha",name:"Katchery Bazar",lat:32.08544925,lng:72.66400919},
  {city:"Sargodha",name:"Karkhana Bazar",lat:32.08491294,lng:72.66218529},
  {city:"Sargodha",name:"Sarafa Bazar Corner",lat:32.08578559,lng:72.66501770},
@@ -46,49 +46,26 @@ const DATA = [
  {city:"Sargodha",name:"Rail Bazar",lat:32.08524927,lng:72.66609058},
  {city:"Sargodha",name:"2-Block Masjid",lat:32.08683093,lng:72.66648755},
  {city:"Sargodha",name:"Trust Plaza",lat:32.08099500,lng:72.66840801},
-
- // SILLANWALI
- {city:"Sillanwali",name:"Railway Road",lat:31.826025,lng:72.537328},
- {city:"Sillanwali",name:"Block No. 03",lat:31.824997,lng:72.540812},
- {city:"Sillanwali",name:"Rana Market",lat:31.825045,lng:72.542295},
-
- // SAHIWAL
- {city:"Sahiwal",name:"Circular Road",lat:31.972574,lng:72.33001},
- {city:"Sahiwal",name:"Ring Road",lat:31.975297,lng:72.322489},
- {city:"Sahiwal",name:"Main Bazar",lat:31.972853,lng:72.329849},
-
- // SHAHPUR
- {city:"Shahpur",name:"Main khushab Road Bazar",lat:32.285818,lng:72.434725},
- {city:"Shahpur",name:"Sargodha khushab road Road",lat:32.288013,lng:72.43392},
- {city:"Shahpur",name:"Royal Feed Chicks",lat:32.286483,lng:72.433137},
-
- // BHERA
- {city:"Bhera",name:"Lalu Wala Darwaza",lat:32.481209,lng:72.907069},
- {city:"Bhera",name:"Mohallah Ganjwala",lat:32.48218,lng:72.912579},
- {city:"Bhera",name:"Circular Road",lat:32.479872,lng:72.910327},
-
- // BHALWAL
- {city:"Bhalwal",name:"Ameen Bazar",lat:32.266098,lng:72.904049},
- {city:"Bhalwal",name:"Liaqat Shaheed Road",lat:32.269254,lng:72.904233},
- {city:"Bhalwal",name:"Salam Bhalwal",lat:32.267743,lng:72.904759},
-
- // KOTMOMIN
- {city:"Kotmomin",name:"Old Sabzi Mandi",lat:32.184911,lng:73.028508},
- {city:"Kotmomin",name:"Muslim Bazar",lat:32.185212,lng:73.028534},
- {city:"Kotmomin",name:"Main Bazar",lat:32.185049,lng:73.02744}
 ];
 
 const map = L.map('map').setView([32.2,72.7],10);
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
  attribution:'© OpenStreetMap'
 }).addTo(map);
 
-const hydrantIcon = L.divIcon({
- html:`<svg width="28" height="28" viewBox="0 0 64 64">
- <path d="M28 6h8v8h6c4 0 6 3 6 6v8h6v8h-6v16c0 6-4 10-10 10H26c-6 0-10-4-10-10V36H10v-8h6v-8c0-3 2-6 6-6h6V6z" fill="#dc2626"/>
+/* 🚑 Rescue 1122 Ambulance Icon */
+const ambulanceIcon = L.divIcon({
+ html:`<svg width="30" height="30" viewBox="0 0 64 64">
+ <rect x="6" y="20" width="40" height="20" rx="3" fill="#2563eb"/>
+ <rect x="46" y="26" width="12" height="14" rx="2" fill="#1e40af"/>
+ <circle cx="18" cy="44" r="4" fill="#111"/>
+ <circle cx="40" cy="44" r="4" fill="#111"/>
+ <rect x="18" y="24" width="12" height="4" fill="#fff"/>
+ <rect x="22" y="20" width="4" height="12" fill="#fff"/>
  </svg>`,
- iconSize:[28,28],
- iconAnchor:[14,28]
+ iconSize:[30,30],
+ iconAnchor:[15,30]
 });
 
 const list = document.getElementById("list");
@@ -102,13 +79,19 @@ DATA.forEach((p)=>{
    c.textContent=currentCity;
    list.appendChild(c);
  }
- const m=L.marker([p.lat,p.lng],{icon:hydrantIcon}).addTo(map);
- m.bindPopup(`<b>${p.name}</b><br>${p.city}`);
+
+ // 🚑 Ambulance Marker ONLY
+ const marker = L.marker([p.lat,p.lng],{icon:ambulanceIcon}).addTo(map);
+ marker.bindPopup(`<b>Rescue 1122 Ambulance</b><br>${p.name}<br>${p.city}`);
+
  const card=document.createElement("div");
  card.className="card";
  card.innerHTML=`<div class="name">${p.name}</div>
  <div class="coords">${p.lat}, ${p.lng}</div>`;
- card.onclick=()=>{map.setView([p.lat,p.lng],17);m.openPopup();}
+ card.onclick=()=>{
+   map.setView([p.lat,p.lng],17);
+   marker.openPopup();
+ }
  list.appendChild(card);
 });
 </script>
